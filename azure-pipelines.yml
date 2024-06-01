@@ -18,59 +18,6 @@
 #     echo See https://aka.ms/yaml
 #   displayName: 'Run a multi-line script'
 
-# trigger:
-# - main  # Adjust this to your default branch
-
-# pool:
-#   vmImage: 'ubuntu-latest'  # Use 'macos-latest' if you need to build iOS apps
-
-# variables:
-#   FLUTTER_VERSION: '3.7.0'  # Set to your desired Flutter version
-
-# steps:
-# - script: |
-#     # Install Flutter
-#     git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
-#     echo "$HOME/flutter/bin" >> $GITHUB_PATH
-#     export PATH="$PATH:$HOME/flutter/bin"
-#     flutter --version
-#   displayName: 'Install Flutter'
-
-# - script: |
-#     # Install dependencies
-#     flutter pub get
-#   displayName: 'Install dependencies'
-
-# - script: |
-#     # Run tests
-#     flutter test
-#   displayName: 'Run tests'
-
-# - script: |
-#     # Build APK for Android
-#     flutter build apk --release
-#   displayName: 'Build APK'
-
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     pathtoPublish: 'build/app/outputs/flutter-apk/'
-#     artifactName: 'apk'
-#   displayName: 'Publish APK'
-
-# - script: |
-#     # Build iOS app (requires macOS agent)
-#     flutter build ios --release --no-codesign
-#   displayName: 'Build iOS app'
-#   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
-
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     pathtoPublish: 'build/ios/iphoneos/'
-#     artifactName: 'ios'
-#   displayName: 'Publish iOS build'
-#   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
-
-
 trigger:
 - main  # Adjust this to your default branch
 
@@ -84,8 +31,9 @@ steps:
 - script: |
     # Install Flutter
     git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
-    echo "##vso[task.prependpath]$HOME/flutter/bin"
-    flutter/bin/flutter --version
+    echo "$HOME/flutter/bin" >> $GITHUB_PATH
+    export PATH="$PATH:$HOME/flutter/bin"
+    flutter --version
   displayName: 'Install Flutter'
 
 - script: |
@@ -121,5 +69,6 @@ steps:
     artifactName: 'ios'
   displayName: 'Publish iOS build'
   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
+
 
 
