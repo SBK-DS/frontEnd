@@ -3,17 +3,69 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
+# trigger:
+# - main
+
+# pool:
+#   vmImage: ubuntu-latest
+
+# steps:
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
+
 trigger:
-- main
+- main  # Adjust this to your default branch
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'  # Use 'macos-latest' if you need to build iOS apps
+
+variables:
+  FLUTTER_VERSION: '3.7.0'  # Set to your desired Flutter version
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+- script: |
+    # Install Flutter
+    git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
+    echo "$HOME/flutter/bin" >> $GITHUB_PATH
+    export PATH="$PATH:$HOME/flutter/bin"
+    flutter --version
+  displayName: 'Install Flutter'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+    # Install dependencies
+    flutter pub get
+  displayName: 'Install dependencies'
+
+- script: |
+    # Run tests
+    flutter test
+  displayName: 'Run tests'
+
+- script: |
+    # Build APK for Android
+    flutter build apk --release
+  displayName: 'Build APK'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: 'build/app/outputs/flutter-apk/'
+    artifactName: 'apk'
+  displayName: 'Publish APK'
+
+- script: |
+    # Build iOS app (requires macOS agent)
+    flutter build ios --release --no-codesign
+  displayName: 'Build iOS app'
+  condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: 'build/ios/iphoneos/'
+    artifactName: 'ios'
+  displayName: 'Publish iOS build'
+  condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
