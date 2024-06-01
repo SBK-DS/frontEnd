@@ -1,51 +1,107 @@
-trigger:
-- main  # Adjust this to your default branch
+name: '1.0.$(Build.BuildId)'
 
-pool:
-  vmImage: 'ubuntu-latest'  # Choose an appropriate image
+trigger:
+- master
 
 variables:
-  FLUTTER_VERSION: '3.7.0'  # Set to your desired Flutter version
+- name: androidKeystoreKeyAlias
+  value: key
 
-steps:
-- script: |
-    # Install Flutter
-    git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
-    echo "$HOME/flutter/bin" >> $GITHUB_PATH
-    export PATH="$PATH:$HOME/flutter/bin"
-    $HOME/flutter/bin/flutter --version
-  displayName: 'Install Flutter'
+jobs:
+- job: BuildAndroid
+  displayName: Build for Android
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: DownloadSecureFile@1
+    displayName: Get releaseKeyStore.jks
+    name: releaseKeyStore
+    inputs:
+      secureFile: 'releaseKeyStore.jks'
+  - pwsh: |
+      Write-Host "##vso[task.setvariable variable=keyAlias;]$(androidKeystoreKeyAlias)"
+      Write-Host "##vso[task.setvariable variable=keyPassword;]$(androidKeystoreKeyPassword)"
+      Write-Host "##vso[task.setvariable variable=storeFile;]$(releaseKeyStore.secureFilePath)"
+      Write-Host "##vso[task.setvariable variable=storePassword;]$(androidKeystorePassword)"
+    displayName: "set keystore environment variables"
+  - task: DownloadSecureFile@1
+    displayName: Get google-services.json
+    name: googleServicesJson
+    inputs:
+      secureFile: 'google-services.json'
+  - pwsh: Move-Item $(googleServicesJson.secureFilePath) android/app/ -Force
+    displayName: Override google-services.json
+  - task: FlutterInstall@0
+    displayName: Install Flutter
+    inputs:
+      channel: 'stable'
+      version: 'latest'
+  - task: FlutterBuild@0
+    displayName: Build App
+    inputs:
+      target: 'apk'
+      projectDirectory: '.'
+      buildName: '$(Build.BuildNumber)'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifact
+    inputs:
+      PathtoPublish: '$(Build.Repository.LocalPath)/build/app/outputs/apk/release'
+      ArtifactName: 'apk'
+      publishLocation: 'Container'
 
-- script: |
-    # Install dependencies
-    $HOME/flutter/bin/flutter pub get
-  displayName: 'Install dependencies'
-
-- script: |
-    # Run tests
-    $HOME/flutter/bin/flutter test
-  displayName: 'Run tests'
-
-- script: |
-    # Build APK for Android
-    $HOME/flutter/bin/flutter build apk --release
-  displayName: 'Build APK'
-
-- script: |
-    # Build iOS app (requires macOS agent)
-    $HOME/flutter/bin/flutter build ios --release --no-codesign
-  displayName: 'Build iOS app'
-  condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: 'build/app/outputs/flutter-apk/'
-    artifactName: 'apk'
-  displayName: 'Publish APK'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: 'build/ios/iphoneos/'
-    artifactName: 'ios'
-  displayName: 'Publish iOS build'
-  condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
+- job: BuildIOS
+  displayName: Build for IOS
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - task: InstallAppleCertificate@2
+    displayName: Install Apple distribution certificate
+    inputs:
+      certSecureFile: 'distribution.p12'
+      certPwd: '$(distribution.p12-password)'
+      keychain: 'temp'
+  - task: InstallAppleProvisioningProfile@1
+    displayName: Install ad-hoc distribution profile
+    inputs:
+      provisioningProfileLocation: 'secureFiles'
+      provProfileSecureFile: 'Flutter_CI_CD__ad_hoc.mobileprovision'
+  - task: DownloadSecureFile@1
+    displayName: Get GoogleService-Info.plist
+    name: googleServicesInfoPlist
+    inputs:
+      secureFile: 'GoogleService-Info.plist'
+  - pwsh: Move-Item $(googleServicesInfoPlist.secureFilePath) ios/Runner/ -Force
+    displayName: Override GoogleService-Info.plist
+  - task: FlutterInstall@0
+    displayName: Install Flutter
+    inputs:
+      channel: 'stable'
+      version: 'latest'
+  - task: FlutterBuild@0
+    displayName: Build app
+    inputs:
+      target: 'ios'
+      projectDirectory: '.'
+      buildName: '$(Build.BuildNumber)'
+      iosCodesign: false
+  - task: Xcode@5
+    displayName: Package and sign app
+    inputs:
+      actions: 'build'
+      configuration: 'Release'
+      sdk: 'iphoneos'
+      xcWorkspacePath: 'ios/Runner.xcworkspace'
+      scheme: 'Runner'
+      packageApp: true
+      exportPath: '$(System.ArtifactsDirectory)'
+      exportOptions: 'plist'
+      exportOptionsPlist: 'ios/exportOptions.plist'
+      signingOption: 'manual'
+      signingIdentity: '$(APPLE_CERTIFICATE_SIGNING_IDENTITY)'
+      provisioningProfileUuid: '$(APPLE_PROV_PROFILE_UUID)'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifact
+    inputs:
+      PathtoPublish: '$(System.ArtifactsDirectory)'
+      ArtifactName: 'ios'
+      publishLocation: 'Container'
