@@ -71,8 +71,6 @@
 #   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
 
 
-
-
 trigger:
 - main  # Adjust this to your default branch
 
@@ -87,7 +85,7 @@ steps:
     # Install Flutter
     git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
     echo "##vso[task.prependpath]$HOME/flutter/bin"
-    flutter --version
+    flutter/bin/flutter --version
   displayName: 'Install Flutter'
 
 - script: |
@@ -123,4 +121,5 @@ steps:
     artifactName: 'ios'
   displayName: 'Publish iOS build'
   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
+
 
