@@ -1,0 +1,51 @@
+trigger:
+- main  # Adjust this to your default branch
+
+pool:
+  vmImage: 'ubuntu-latest'  # Choose an appropriate image
+
+variables:
+  FLUTTER_VERSION: '3.7.0'  # Set to your desired Flutter version
+
+steps:
+- script: |
+    # Install Flutter
+    git clone https://github.com/flutter/flutter.git -b stable --depth 1
+    echo "$HOME/flutter/bin" >> $GITHUB_PATH
+    export PATH="$PATH:$HOME/flutter/bin"
+    flutter --version
+  displayName: 'Install Flutter'
+
+- script: |
+    # Install dependencies
+    flutter pub get
+  displayName: 'Install dependencies'
+
+- script: |
+    # Run tests
+    flutter test
+  displayName: 'Run tests'
+
+- script: |
+    # Build APK for Android
+    flutter build apk --release
+  displayName: 'Build APK'
+
+- script: |
+    # Build iOS app (requires macOS agent)
+    flutter build ios --release --no-codesign
+  displayName: 'Build iOS app'
+  condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: 'build/app/outputs/flutter-apk/'
+    artifactName: 'apk'
+  displayName: 'Publish APK'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: 'build/ios/iphoneos/'
+    artifactName: 'ios'
+  displayName: 'Publish iOS build'
+  condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
