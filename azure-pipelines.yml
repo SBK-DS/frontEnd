@@ -10,30 +10,30 @@ variables:
 steps:
 - script: |
     # Install Flutter
-    git clone https://github.com/flutter/flutter.git -b stable --depth 1
+    git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
     echo "$HOME/flutter/bin" >> $GITHUB_PATH
     export PATH="$PATH:$HOME/flutter/bin"
-    flutter --version
+    $HOME/flutter/bin/flutter --version
   displayName: 'Install Flutter'
 
 - script: |
     # Install dependencies
-    flutter pub get
+    $HOME/flutter/bin/flutter pub get
   displayName: 'Install dependencies'
 
 - script: |
     # Run tests
-    flutter test
+    $HOME/flutter/bin/flutter test
   displayName: 'Run tests'
 
 - script: |
     # Build APK for Android
-    flutter build apk --release
+    $HOME/flutter/bin/flutter build apk --release
   displayName: 'Build APK'
 
 - script: |
     # Build iOS app (requires macOS agent)
-    flutter build ios --release --no-codesign
+    $HOME/flutter/bin/flutter build ios --release --no-codesign
   displayName: 'Build iOS app'
   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
 
