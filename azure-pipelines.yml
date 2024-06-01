@@ -31,7 +31,8 @@ steps:
 - script: |
     # Install Flutter
     git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
-    echo "##vso[task.prependpath]$HOME/flutter/bin"
+    echo "$HOME/flutter/bin" >> $GITHUB_PATH
+    export PATH="$PATH:$HOME/flutter/bin"
     flutter --version
   displayName: 'Install Flutter'
 
