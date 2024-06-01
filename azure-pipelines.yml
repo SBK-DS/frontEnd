@@ -31,23 +31,26 @@ steps:
 - script: |
     # Install Flutter
     git clone https://github.com/flutter/flutter.git -b stable --depth 1 $HOME/flutter
-    echo "$HOME/flutter/bin" >> $GITHUB_PATH
-    export PATH="$PATH:$HOME/flutter/bin"
+    echo 'export PATH="$PATH:$HOME/flutter/bin"' >> ~/.bashrc
+    source ~/.bashrc
     flutter --version
   displayName: 'Install Flutter'
 
 - script: |
     # Install dependencies
+    source ~/.bashrc
     flutter pub get
   displayName: 'Install dependencies'
 
 - script: |
     # Run tests
+    source ~/.bashrc
     flutter test
   displayName: 'Run tests'
 
 - script: |
     # Build APK for Android
+    source ~/.bashrc
     flutter build apk --release
   displayName: 'Build APK'
 
@@ -59,6 +62,7 @@ steps:
 
 - script: |
     # Build iOS app (requires macOS agent)
+    source ~/.bashrc
     flutter build ios --release --no-codesign
   displayName: 'Build iOS app'
   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
@@ -69,6 +73,7 @@ steps:
     artifactName: 'ios'
   displayName: 'Publish iOS build'
   condition: eq(variables['Agent.OS'], 'Darwin')  # Only run on macOS agents
+
 
 
 
