@@ -1,0 +1,63 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# trigger:
+# - main
+
+# pool:
+#   vmImage: ubuntu-latest
+
+# steps:
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
+
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  flutterVersion: '3.22.1'
+  appVersion: '1.0.0+1'  # Define your custom version here
+
+steps:
+- task: FlutterInstall@0
+  inputs:
+    channel: 'stable'
+    version: 'latest'
+
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y lib32stdc++6 lib32z1
+  displayName: 'Install dependencies'
+
+- script: yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
+  displayName: 'Accept Android SDK licenses'
+
+- script: |
+    sed -i "s/^version:.*/version: $(appVersion)/" pubspec.yaml
+  displayName: 'Set custom app version'
+
+- task: FlutterBuild@0
+  inputs:
+    target: 'mobile'
+
+- task: FlutterBuild@0
+  inputs:
+    target: 'apk'
+    # arguments: '--verbose'
+  displayName: 'Flutter Build apk'
+
+- script: |
+    echo "Build completed with version $(appVersion)"
+  displayName: 'Output build version'
+
