@@ -41,11 +41,11 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    mkdir -p $androidHome/cmdline-tools
+    sudo mkdir -p $androidHome/cmdline-tools
     wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O commandlinetools.zip
-    unzip commandlinetools.zip -d $androidHome/cmdline-tools
-    mkdir -p $androidHome/cmdline-tools/latest
-    mv $androidHome/cmdline-tools/cmdline-tools/* $androidHome/cmdline-tools/latest/
+    sudo unzip commandlinetools.zip -d $androidHome/cmdline-tools
+    sudo mkdir -p $androidHome/cmdline-tools/latest
+    sudo mv $androidHome/cmdline-tools/cmdline-tools/* $androidHome/cmdline-tools/latest/
   displayName: 'Download and install Android command-line tools'
 
 - script: |
