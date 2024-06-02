@@ -43,9 +43,11 @@ steps:
 - script: |
     sudo mkdir -p $androidHome/cmdline-tools
     wget https://dl.google.com/android/repository/commandlinetools-linux-8092744_latest.zip -O commandlinetools.zip
-    sudo unzip commandlinetools.zip -d $androidHome/cmdline-tools
+    sudo unzip -q commandlinetools.zip -d $androidHome/cmdline-tools
     sudo mkdir -p $androidHome/cmdline-tools/latest
     sudo mv $androidHome/cmdline-tools/cmdline-tools/* $androidHome/cmdline-tools/latest/
+    sudo rm -rf $androidHome/cmdline-tools/cmdline-tools
+    ls -la $androidHome/cmdline-tools/latest/bin
   displayName: 'Download and install Android command-line tools'
 
 - script: |
@@ -67,6 +69,10 @@ steps:
   inputs:
     target: 'apk'
   displayName: 'Flutter Build apk'
+
+- script: |
+    echo "Build completed with version $(appVersion)"
+  displayName: 'Output build version'
 
 - script: |
     echo "Build completed with version $(appVersion)"
