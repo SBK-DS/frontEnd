@@ -34,6 +34,7 @@ steps:
     sudo apt-get update
     sudo apt-get install -y curl unzip xz-utils libglu1-mesa
   displayName: 'Install dependencies'
+  shell: bash
 
 # Install Flutter SDK
 - script: |
@@ -43,11 +44,13 @@ steps:
     flutter precache
     flutter doctor
   displayName: 'Install Flutter'
+  shell: bash
 
 # Add Flutter to PATH
 - script: |
     echo '##vso[task.setvariable variable=PATH]$PATH:`pwd`/flutter/bin'
   displayName: 'Add Flutter to PATH'
+  shell: bash
 
 # Install project dependencies
 - script: |
@@ -58,10 +61,12 @@ steps:
 # Run tests
 - script: flutter test
   displayName: 'Run tests'
+  shell: bash
 
 # Build APK (for Android)
 - script: flutter build apk --release
   displayName: 'Build Android APK'
+  shell: bash
 
 # Archive APK
 - task: CopyFiles@2
@@ -75,4 +80,5 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+
 
