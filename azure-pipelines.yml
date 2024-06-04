@@ -39,7 +39,7 @@ steps:
 - script: |
     curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
     tar xf flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-    export PATH="$PATH:`pwd`/flutter/bin"
+    export PATH="$PATH:$PWD/flutter/bin"
     flutter precache
     flutter doctor
   displayName: 'Install Flutter'
@@ -51,13 +51,13 @@ steps:
 
 # Install project dependencies
 - script:
-    export PATH="$PATH:`pwd`/flutter/bin"
+    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
     flutter pub get
   displayName: 'Install dependencies'
 
 # Run tests
 - script:
-    export PATH="$PATH:`pwd`/flutter/bin"
+    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
     flutter test
   displayName: 'Run tests'
 
