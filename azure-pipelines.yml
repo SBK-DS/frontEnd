@@ -1,0 +1,74 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# trigger:
+# - main
+
+# pool:
+#   vmImage: ubuntu-latest
+
+# steps:
+# - script: echo Hello, world!
+#   displayName: 'Run a one-line script'
+
+# - script: |
+#     echo Add other tasks to build, test, and deploy your project.
+#     echo See https://aka.ms/yaml
+#   displayName: 'Run a multi-line script'
+
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  flutterVersion: '3.7.0'  # Adjust the Flutter version as needed
+
+steps:
+# Install Flutter SDK
+- task: UseFlutterVersion@0
+  inputs:
+    version: 'latest'
+
+# Install dependencies
+- script: |
+    flutter doctor
+    flutter pub get
+  displayName: 'Install dependencies'
+
+# Run tests
+- script: flutter test
+  displayName: 'Run tests'
+
+# Build APK (for Android)
+- script: flutter build apk --release
+  displayName: 'Build Android APK'
+
+# Build IPA (for iOS, only runs on macOS)
+- script: flutter build ios --release
+  displayName: 'Build iOS App'
+  condition: eq(variables['Agent.OS'], 'Darwin')
+
+# Archive APK
+- task: CopyFiles@2
+  inputs:
+    contents: 'build/app/outputs/flutter-apk/app-release.apk'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/apk'
+
+# Archive IPA
+- task: CopyFiles@2
+  inputs:
+    contents: 'build/ios/iphoneos/Runner.app'
+    targetFolder: '$(Build.ArtifactStagingDirectory)/ios'
+  condition: eq(variables['Agent.OS'], 'Darwin')
+
+# Publish artifacts
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
