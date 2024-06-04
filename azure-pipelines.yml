@@ -53,6 +53,7 @@ steps:
 - script: |
     flutter pub get
   displayName: 'Install dependencies'
+  shell: bash
 
 # Run tests
 - script: flutter test
