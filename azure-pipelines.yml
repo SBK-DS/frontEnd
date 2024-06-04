@@ -50,11 +50,15 @@ steps:
   displayName: 'Add Flutter to PATH'
 
 # Install project dependencies
-- script: flutter pub get
+- script:
+    export PATH="$PATH:`pwd`/flutter/bin"
+    flutter pub get
   displayName: 'Install dependencies'
 
 # Run tests
-- script: flutter test
+- script:
+    export PATH="$PATH:`pwd`/flutter/bin"
+    flutter test
   displayName: 'Run tests'
 
 # Build APK (for Android)
