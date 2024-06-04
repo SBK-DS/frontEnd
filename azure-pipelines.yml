@@ -29,14 +29,28 @@ variables:
   flutterVersion: '3.7.0'  # Adjust the Flutter version as needed
 
 steps:
-# Install Flutter SDK
-- task: UseFlutterVersion@0
-  inputs:
-    version: 'latest'
-
-# Install dependencies
+# Install dependencies for Flutter
 - script: |
+    sudo apt-get update
+    sudo apt-get install -y curl unzip xz-utils libglu1-mesa
+  displayName: 'Install dependencies'
+
+# Install Flutter SDK
+- script: |
+    curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
+    tar xf flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
+    export PATH="$PATH:`pwd`/flutter/bin"
+    flutter precache
     flutter doctor
+  displayName: 'Install Flutter'
+
+# Add Flutter to PATH
+- script: |
+    echo '##vso[task.setvariable variable=PATH]$PATH:`pwd`/flutter/bin'
+  displayName: 'Add Flutter to PATH'
+
+# Install project dependencies
+- script: |
     flutter pub get
   displayName: 'Install dependencies'
 
@@ -48,23 +62,11 @@ steps:
 - script: flutter build apk --release
   displayName: 'Build Android APK'
 
-# Build IPA (for iOS, only runs on macOS)
-- script: flutter build ios --release
-  displayName: 'Build iOS App'
-  condition: eq(variables['Agent.OS'], 'Darwin')
-
 # Archive APK
 - task: CopyFiles@2
   inputs:
     contents: 'build/app/outputs/flutter-apk/app-release.apk'
     targetFolder: '$(Build.ArtifactStagingDirectory)/apk'
-
-# Archive IPA
-- task: CopyFiles@2
-  inputs:
-    contents: 'build/ios/iphoneos/Runner.app'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/ios'
-  condition: eq(variables['Agent.OS'], 'Darwin')
 
 # Publish artifacts
 - task: PublishBuildArtifacts@1
@@ -72,3 +74,4 @@ steps:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
     publishLocation: 'Container'
+
