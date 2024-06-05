@@ -1,104 +1,41 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+# azure-pipelines.yml
+trigger:
+  branches:
+    include:
+      - main
+      - master
 
-# trigger:
-# - main
+pool:
+  vmImage: 'ubuntu-latest'
 
-# pool:
-#   vmImage: ubuntu-latest
+container:
+  image: ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
 
-# steps:
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
+variables:
+  FLUTTER_PROJECT_PATH: '/app'
 
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run a multi-line script'
+jobs:
+- job: RunTests
+  displayName: 'Run Flutter Tests'
+  steps:
+  - script: |
+      cd $(FLUTTER_PROJECT_PATH)
+      flutter pub get
+    displayName: 'Get Flutter Dependencies'
 
+  - script: |
+      yes | flutter doctor --android-licenses
+    displayName: 'Accept Android SDK Licenses'
 
-# trigger:
-# - main
+  - script: |
+      flutter test
+    displayName: 'Run Flutter Tests'
 
-# pool:
-#   vmImage: 'ubuntu-latest'
-
-# variables:
-#   flutterVersion: '3.7.0'  # Adjust the Flutter version as needed
-
-# steps:
-# # Install dependencies for Flutter
-# - script: |
-#     sudo apt-get update
-#     sudo apt-get install -y curl unzip xz-utils libglu1-mesa
-#   displayName: 'Install dependencies'
-
-# # Install Flutter SDK
-# - script: |
-#     curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-#     tar xf flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-#     export PATH="$PATH:$PWD/flutter/bin"
-#     flutter precache
-#     flutter doctor
-#   displayName: 'Install Flutter'
-
-# # Add Flutter to PATH
-# - script: |
-#     echo '##vso[task.setvariable variable=PATH]$PATH:`pwd`/flutter/bin'
-#   displayName: 'Add Flutter to PATH'
-
-# # Install project dependencies
-# - script:
-#     export PATH="$PATH:$(FLUTTER_ROOT)/bin"
-#     flutter pub get
-#   displayName: 'Install dependencies'
-
-# # Run tests
-# - script:
-#     export PATH="$PATH:$(FLUTTER_ROOT)/bin"
-#     flutter test
-#   displayName: 'Run tests'
-
-# # Build APK (for Android)
-# - script: flutter build apk --release
-#   displayName: 'Build Android APK'
-
-# # Archive APK
-# - task: CopyFiles@2
-#   inputs:
-#     contents: 'build/app/outputs/flutter-apk/app-release.apk'
-#     targetFolder: '$(Build.ArtifactStagingDirectory)/apk'
-
-# # Publish artifacts
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-#     ArtifactName: 'drop'
-#     publishLocation: 'Container'
-
-
-# Use the official CirrusLabs Flutter Docker image
-FROM ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
-# Set the working directory in the container
-WORKDIR /app
-
-COPY . .
-
-# Ensure flutter is in the PATH
-#ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
-
-# Get Flutter dependencies
-RUN flutter pub get
-
-# Ensure licenses are accepted (Android SDK)
-RUN yes | flutter doctor --android-licenses
-
-# Build the APK
-RUN flutter build apk --release
-
-# Specify the default command to run when starting the container
-CMD ["flutter", "run", "test"]
-
-
+  - script: |
+      if [ $? -eq 0 ]; then
+        echo "CI successful"
+      else
+        echo "CI failed"
+        exit 1
+      fi
+    displayName: 'Check Test Status'
