@@ -1,82 +1,38 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-# trigger:
-# - main
-
-# pool:
-#   vmImage: ubuntu-latest
-
-# steps:
-# - script: echo Hello, world!
-#   displayName: 'Run a one-line script'
-
-# - script: |
-#     echo Add other tasks to build, test, and deploy your project.
-#     echo See https://aka.ms/yaml
-#   displayName: 'Run a multi-line script'
-
-
+# azure-pipelines.yml
 trigger:
-- main
+  branches:
+    include:
+      - main
+      - master
 
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  flutterVersion: '3.7.0'  # Adjust the Flutter version as needed
+jobs:
+- job: RunTests
+  displayName: 'Run Flutter Tests'
+  container:
+    image: ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
+  steps:
+  - script: |
+      cd $(System.DefaultWorkingDirectory)
+      git config --global --add safe.directory /sdks/flutter
+      flutter pub get
+    displayName: 'Get Flutter Dependencies'
 
-steps:
-# Install dependencies for Flutter
-- script: |
-    sudo apt-get update
-    sudo apt-get install -y curl unzip xz-utils libglu1-mesa
-  displayName: 'Install dependencies'
+  - script: |
+      yes | flutter doctor --android-licenses
+    displayName: 'Accept Android SDK Licenses'
 
-# Install Flutter SDK
-- script: |
-    curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-    tar xf flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-    export PATH="$PATH:$PWD/flutter/bin"
-    flutter precache
-    flutter doctor
-  displayName: 'Install Flutter'
+  - script: |
+      flutter test
+    displayName: 'Run Flutter Tests'
 
-# Add Flutter to PATH
-- script: |
-    echo '##vso[task.setvariable variable=PATH]$PATH:`pwd`/flutter/bin'
-  displayName: 'Add Flutter to PATH'
-
-# Install project dependencies
-- script:
-    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
-    flutter pub get
-  displayName: 'Install dependencies'
-
-# Run tests
-- script:
-    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
-    flutter test
-  displayName: 'Run tests'
-
-# Build APK (for Android)
-- script: flutter build apk --release
-  displayName: 'Build Android APK'
-
-# Archive APK
-- task: CopyFiles@2
-  inputs:
-    contents: 'build/app/outputs/flutter-apk/app-release.apk'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/apk'
-
-# Publish artifacts
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-
-
-
+  - script: |
+      if [ $? -eq 0 ]; then
+        echo "CI successful"
+      else
+        echo "CI failed"
+        exit 1
+      fi
+    displayName: 'Check Test Status'
