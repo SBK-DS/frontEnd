@@ -8,18 +8,14 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-container:
-  image: ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
-
-variables:
-  FLUTTER_PROJECT_PATH: '/app'
-
 jobs:
 - job: RunTests
   displayName: 'Run Flutter Tests'
+  container:
+    image: ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
   steps:
   - script: |
-      cd $(FLUTTER_PROJECT_PATH)
+      cd $(System.DefaultWorkingDirectory)
       flutter pub get
     displayName: 'Get Flutter Dependencies'
 
