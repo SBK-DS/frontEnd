@@ -9,13 +9,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-  
-  - script: flutter clean
-    displayName: 'Clean Flutter Project'
-    
+
   - script: |
       docker build -t flutter-app .
     displayName: 'Build Docker Image'
+
   - script: |
       docker run --rm -v $(System.DefaultWorkingDirectory):/app flutter-app flutter build apk
     displayName: 'Build Flutter App Bundle'
