@@ -16,6 +16,7 @@ jobs:
   steps:
   - script: |
       cd $(System.DefaultWorkingDirectory)
+      git config --global --add safe.directory /sdks/flutter
       flutter pub get
     displayName: 'Get Flutter Dependencies'
 
