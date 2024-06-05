@@ -51,9 +51,10 @@ steps:
 
 # Install project dependencies
 - script:
-    "$FLUTTER_ROOT/bin/flutter" pub get
+    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
     flutter pub get
   displayName: 'Install dependencies'
+  shell: sh
 
 # Run tests
 - script:
