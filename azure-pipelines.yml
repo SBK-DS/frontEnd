@@ -8,31 +8,11 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-jobs:
-- job: RunTests
-  displayName: 'Run Flutter Tests'
-  container:
-    image: ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
-  steps:
+steps:
   - script: |
-      cd $(System.DefaultWorkingDirectory)
-      git config --global --add safe.directory /sdks/flutter
-      flutter pub get
-    displayName: 'Get Flutter Dependencies'
+      docker build -t flutter-app .
+    displayName: 'Build Docker Image'
 
   - script: |
-      yes | flutter doctor --android-licenses
-    displayName: 'Accept Android SDK Licenses'
-
-  - script: |
-      flutter test
-    displayName: 'Run Flutter Tests'
-
-  - script: |
-      if [ $? -eq 0 ]; then
-        echo "CI successful"
-      else
-        echo "CI failed"
-        exit 1
-      fi
-    displayName: 'Check Test Status'
+      docker run flutter-app
+    displayName: 'Run Flutter Tests in Docker Container'
