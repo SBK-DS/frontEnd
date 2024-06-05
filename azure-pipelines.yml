@@ -9,6 +9,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+  
+  - script: flutter clean
+    displayName: 'Clean Flutter Project'
+    
   - script: |
       docker build -t flutter-app .
     displayName: 'Build Docker Image'
