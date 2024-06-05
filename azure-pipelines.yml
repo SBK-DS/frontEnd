@@ -50,7 +50,7 @@ steps:
   displayName: 'Add Flutter to PATH'
 
 # Install project dependencies
-- run:
+- script:
     export PATH="$PATH:$(FLUTTER_ROOT)/bin"
     flutter pub get
   displayName: 'Install dependencies'
