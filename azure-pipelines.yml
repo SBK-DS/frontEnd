@@ -12,3 +12,12 @@ steps:
   - script: |
       docker build -t flutter-app .
     displayName: 'Build Docker Image'
+  - script: |
+      docker run --rm -v $(System.DefaultWorkingDirectory):/app flutter-app flutter build apk
+    displayName: 'Build Flutter App Bundle'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/build/app/outputs/flutter-apk'
+      ArtifactName: 'flutter-app-bundle'
+      publishLocation: 'Container'
