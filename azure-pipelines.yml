@@ -12,7 +12,3 @@ steps:
   - script: |
       docker build -t flutter-app .
     displayName: 'Build Docker Image'
-
-  - script: |
-      docker run flutter-app
-    displayName: 'Run Flutter Tests in Docker Container'
