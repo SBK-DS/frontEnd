@@ -19,4 +19,4 @@ RUN yes | flutter doctor --android-licenses
 # Set the permissions for the Flutter SDK cache directory
 
 # Specify the default command to run when starting the container
-CMD ["flutter", "test"]
+RUN flutter test
