@@ -19,64 +19,86 @@
 #   displayName: 'Run a multi-line script'
 
 
-trigger:
-- main
+# trigger:
+# - main
 
-pool:
-  vmImage: 'ubuntu-latest'
+# pool:
+#   vmImage: 'ubuntu-latest'
 
-variables:
-  flutterVersion: '3.7.0'  # Adjust the Flutter version as needed
+# variables:
+#   flutterVersion: '3.7.0'  # Adjust the Flutter version as needed
 
-steps:
-# Install dependencies for Flutter
-- script: |
-    sudo apt-get update
-    sudo apt-get install -y curl unzip xz-utils libglu1-mesa
-  displayName: 'Install dependencies'
+# steps:
+# # Install dependencies for Flutter
+# - script: |
+#     sudo apt-get update
+#     sudo apt-get install -y curl unzip xz-utils libglu1-mesa
+#   displayName: 'Install dependencies'
 
-# Install Flutter SDK
-- script: |
-    curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-    tar xf flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
-    export PATH="$PATH:$PWD/flutter/bin"
-    flutter precache
-    flutter doctor
-  displayName: 'Install Flutter'
+# # Install Flutter SDK
+# - script: |
+#     curl -LO https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
+#     tar xf flutter_linux_${{ variables.flutterVersion }}-stable.tar.xz
+#     export PATH="$PATH:$PWD/flutter/bin"
+#     flutter precache
+#     flutter doctor
+#   displayName: 'Install Flutter'
 
-# Add Flutter to PATH
-- script: |
-    echo '##vso[task.setvariable variable=PATH]$PATH:`pwd`/flutter/bin'
-  displayName: 'Add Flutter to PATH'
+# # Add Flutter to PATH
+# - script: |
+#     echo '##vso[task.setvariable variable=PATH]$PATH:`pwd`/flutter/bin'
+#   displayName: 'Add Flutter to PATH'
 
-# Install project dependencies
-- script:
-    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
-    flutter pub get
-  displayName: 'Install dependencies'
+# # Install project dependencies
+# - script:
+#     export PATH="$PATH:$(FLUTTER_ROOT)/bin"
+#     flutter pub get
+#   displayName: 'Install dependencies'
 
-# Run tests
-- script:
-    export PATH="$PATH:$(FLUTTER_ROOT)/bin"
-    flutter test
-  displayName: 'Run tests'
+# # Run tests
+# - script:
+#     export PATH="$PATH:$(FLUTTER_ROOT)/bin"
+#     flutter test
+#   displayName: 'Run tests'
 
-# Build APK (for Android)
-- script: flutter build apk --release
-  displayName: 'Build Android APK'
+# # Build APK (for Android)
+# - script: flutter build apk --release
+#   displayName: 'Build Android APK'
 
-# Archive APK
-- task: CopyFiles@2
-  inputs:
-    contents: 'build/app/outputs/flutter-apk/app-release.apk'
-    targetFolder: '$(Build.ArtifactStagingDirectory)/apk'
+# # Archive APK
+# - task: CopyFiles@2
+#   inputs:
+#     contents: 'build/app/outputs/flutter-apk/app-release.apk'
+#     targetFolder: '$(Build.ArtifactStagingDirectory)/apk'
 
-# Publish artifacts
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+# # Publish artifacts
+# - task: PublishBuildArtifacts@1
+#   inputs:
+#     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+#     ArtifactName: 'drop'
+#     publishLocation: 'Container'
 
+
+# Use the official CirrusLabs Flutter Docker image
+FROM ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
+# Set the working directory in the container
+WORKDIR /app
+
+COPY . .
+
+# Ensure flutter is in the PATH
+#ENV PATH="/flutter/bin:/flutter/bin/cache/dart-sdk/bin:${PATH}"
+
+# Get Flutter dependencies
+RUN flutter pub get
+
+# Ensure licenses are accepted (Android SDK)
+RUN yes | flutter doctor --android-licenses
+
+# Build the APK
+RUN flutter build apk --release
+
+# Specify the default command to run when starting the container
+CMD ["flutter", "run", "test"]
 
 
