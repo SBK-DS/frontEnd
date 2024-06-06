@@ -18,14 +18,20 @@ steps:
       docker run --rm -v $(pwd):/app -w /app flutter-app flutter build apk
     displayName: 'Build APK'
 
+  # Step 3: Copy APK from Docker Container to Host Machine
   - script: |
-      containerId=$(docker create flutter-app)
-      docker cp $containerId:/app/build/app/outputs/flutter-apk/app-release.apk ./app-release.apk
-      docker rm $containerId
+      docker cp flutter-build-container:/app/build/app/outputs/flutter-apk/app-release.apk $(System.DefaultWorkingDirectory)/app-release.apk
+      docker rm flutter-build-container
     displayName: 'Copy APK from Docker Container'
 
+  # Step 4: Verify APK is in the correct path
+  - script: |
+      ls -la $(System.DefaultWorkingDirectory)/app-release.apk
+    displayName: 'Verify APK Path'
+
+  # Step 5: Publish APK as Artifact
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: 'app-release.apk'
+      pathtoPublish: '$(System.DefaultWorkingDirectory)/app-release.apk'
       artifactName: 'apk'
     displayName: 'Publish APK Artifact'
