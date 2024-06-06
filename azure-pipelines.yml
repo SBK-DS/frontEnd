@@ -17,3 +17,9 @@ steps:
   - script: |
       docker run --rm -v $(pwd):/app -w /app flutter-app flutter build apk
     displayName: 'Build APK'
+
+  - script: |
+      containerId=$(docker create flutter-app)
+      docker cp $containerId:/app/build/app/outputs/flutter-apk/app-release.apk ./app-release.apk
+      docker rm $containerId
+    displayName: 'Copy APK from Docker Container'
