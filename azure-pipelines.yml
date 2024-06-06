@@ -33,5 +33,5 @@ steps:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(System.DefaultWorkingDirectory)/app-release.apk'
-      artifactName: 'apk'
+      artifactName: 'drop'
     displayName: 'Publish APK Artifact'
