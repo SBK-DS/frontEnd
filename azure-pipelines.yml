@@ -18,6 +18,11 @@ steps:
       docker run --name flutter-build-container -v $(pwd):/app -w /app flutter-app flutter build apk
     displayName: 'Build APK'
 
+  - script: |
+      docker run --rm flutter-app openssl version
+      docker run --rm flutter-app flutter --version
+    displayName: 'Check OpenSSL and Flutter Version'
+
   # Step 3: Copy APK from Docker Container to Host Machine
   - script: |
       docker cp flutter-build-container:/app/build/app/outputs/flutter-apk/app-release.apk $(System.DefaultWorkingDirectory)/app-release.apk
