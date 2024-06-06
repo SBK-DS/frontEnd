@@ -23,3 +23,9 @@ steps:
       docker cp $containerId:/app/build/app/outputs/flutter-apk/app-release.apk ./app-release.apk
       docker rm $containerId
     displayName: 'Copy APK from Docker Container'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: 'app-release.apk'
+      artifactName: 'apk'
+    displayName: 'Publish APK Artifact'
