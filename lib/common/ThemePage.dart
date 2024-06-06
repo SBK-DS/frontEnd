@@ -8,7 +8,7 @@ ThemeData lightTheme() {
     primaryColor: Colors.blue,
     hintColor: Colors.blue,
     fontFamily: 'Georgia',
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       foregroundColor: Colors.white,
       backgroundColor: Colors.blue,
       iconTheme: IconThemeData(color: Colors.white),
@@ -16,25 +16,25 @@ ThemeData lightTheme() {
       titleTextStyle: TextStyle(
           color: Colors.white, fontSize: 20, fontWeight: FontWeight.normal),
     ),
-    textTheme: TextTheme(
-      headline1: TextStyle(
+    textTheme: const TextTheme(
+      displayMedium: TextStyle(
           color: Colors.black, fontSize: 17, fontWeight: FontWeight.normal),
 
-      headline5: TextStyle(
+      displaySmall: TextStyle(
           color: Colors.black, fontSize: 9, fontWeight: FontWeight.normal),
 
       //appbar listtile
-      subtitle1: TextStyle(
+      titleLarge: TextStyle(
           color: Colors.black, fontSize: 17, fontWeight: FontWeight.normal),
       //  appBar: AppBar(
       //   title: Text('My Doctor',
       //    style: Theme.of(context).textTheme.subtitle1),
       // ),
       //appbar listtile white
-      subtitle2: TextStyle(
+      titleMedium: TextStyle(
           color: Colors.white, fontSize: 17, fontWeight: FontWeight.normal),
       //caption
-      headline6: TextStyle(
+      titleSmall: TextStyle(
           color: Colors.blue, fontSize: 17, fontWeight: FontWeight.normal),
     ),
     //   buttonTheme: ButtonThemeData(

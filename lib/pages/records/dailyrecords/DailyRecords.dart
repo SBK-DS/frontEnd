@@ -38,13 +38,13 @@ class _DailyRecordsState extends State<DailyRecords> {
                         labelPadding: EdgeInsets.all(15),
                         tabs: [
                           Text('BP',
-                              style: Theme.of(context).textTheme.subtitle2),
+                              style: Theme.of(context).textTheme.titleMedium),
                           Text('Pulse Rate',
-                              style: Theme.of(context).textTheme.subtitle2),
+                              style: Theme.of(context).textTheme.titleMedium),
                           Text('Respiration Rate',
-                              style: Theme.of(context).textTheme.subtitle2),
+                              style: Theme.of(context).textTheme.titleMedium),
                           Text('Body Temperature',
-                              style: Theme.of(context).textTheme.subtitle2),
+                              style: Theme.of(context).textTheme.titleMedium),
                         ],
                       )),
                   body: TabBarView(
