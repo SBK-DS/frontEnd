@@ -20,8 +20,8 @@ steps:
 
   # Step 3: Copy APK from Docker Container to Host Machine
   - script: |
-      docker cp flutter-build-container:/app/build/app/outputs/flutter-apk/app-release.apk $(System.DefaultWorkingDirectory)/app-release.apk
-      docker rm flutter-build-container
+      docker cp flutter-app:/app/build/app/outputs/flutter-apk/app-release.apk $(System.DefaultWorkingDirectory)/app-release.apk
+      docker rm flutter-app
     displayName: 'Copy APK from Docker Container'
 
   # Step 4: Verify APK is in the correct path
