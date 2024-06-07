@@ -10,6 +10,18 @@ pool:
 
 steps:
 
+  - task: DownloadSecureFile@1
+    displayName: 'Download Keystore File'
+    inputs:
+      secureFile: 'flutter-devops.jks'
+
+  - script: |
+      echo "storePassword=$(storePassword)" > key.properties
+      echo "keyPassword=$(keyPassword)" >> key.properties
+      echo "keyAlias=$(keyAlias)" >> key.properties
+      echo "storeFile=$(System.DefaultWorkingDirectory)/flutter-devops.jks" >> key.properties
+    displayName: 'Create key.properties File'
+
   - script: |
       docker build -t flutter-app .
     displayName: 'Build Docker Image'
