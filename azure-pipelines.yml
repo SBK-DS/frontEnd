@@ -59,5 +59,8 @@ steps:
       secureFile: 'devops.json'
   
   - script: |
+      ls $(Agent.TempDirectory)
+      ls $(System.DefaultWorkingDirectory)
       cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd
+      ls $(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd
     displayName: 'Move devops.json to _SBK-DS.frontEnd folder'
