@@ -1,4 +1,4 @@
-package com.google.flutter_devops
+package com.app.flutter_devops
 
 import io.flutter.embedding.android.FlutterActivity
 
