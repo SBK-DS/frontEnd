@@ -58,7 +58,7 @@ steps:
       secureFile: 'devops.json'
 
   - script: |
-       mkdir -p $(System.DefaultWorkingDirectory)/devopsJson
+      mkdir -p $(System.DefaultWorkingDirectory)/devopsJson
       cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/devopsJson/devops.json
     displayName: 'Move devops.json to devopsJson'
 
