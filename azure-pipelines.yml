@@ -1,4 +1,3 @@
-# azure-pipelines.yml
 trigger:
   branches:
     include:
@@ -46,7 +45,7 @@ steps:
       ls -la $(System.DefaultWorkingDirectory)/app-release.aab
     displayName: 'Verify Bundle Path'
 
- # Step 5: Publish Bundle as Artifact
+  # Step 5: Publish Bundle as Artifact
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: '$(System.DefaultWorkingDirectory)/app-release.aab'
@@ -58,7 +57,7 @@ steps:
     inputs:
       secureFile: 'devops.json'
 
- - script: |
+  - script: |
       cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/devopsJson
     displayName: 'Move devops.json to devopsJson'
 
