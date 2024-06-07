@@ -50,10 +50,6 @@ steps:
     displayName: 'Download Playstore API secure file'
     inputs:
       secureFile: 'devops.json'
-  
-  - script: |
-      cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd
-    displayName: 'Move devops.json to _SBK-DS.frontEnd folder'
 
   # Publish devops.json as a build artifact
   - task: PublishBuildArtifacts@1
