@@ -53,14 +53,8 @@ steps:
       artifactName: 'drop'
     displayName: 'Publish Bundle Artifact'
 
-  - task: DownloadSecureFile@1
-    displayName: 'Download Playstore API secure file'
+  - task: DownloadArtifact@1
+    displayName: 'Download devops.json'
     inputs:
-      secureFile: 'devops.json'
-  
-  - script: |
-      ls $(Agent.TempDirectory)
-      ls $(System.DefaultWorkingDirectory)
-      cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd
-      ls $(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd
-    displayName: 'Move devops.json to _SBK-DS.frontEnd folder'
+      downloadPath: '$(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd'
+      artifactName: 'devopsjson'
