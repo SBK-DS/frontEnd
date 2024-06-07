@@ -41,7 +41,7 @@ steps:
       artifactName: 'drop'
     displayName: 'Publish Bundle Artifact'
 
-   - task: DownloadSecureFile@1
-     displayName: 'Download Playstore API secure file'
-     inputs:
+  - task: DownloadSecureFile@1
+      displayName: 'Download Playstore API secure file'
+      inputs:
        secureFile: 'devops.json'
