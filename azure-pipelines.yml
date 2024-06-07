@@ -61,6 +61,11 @@ steps:
       mkdir -p $(System.DefaultWorkingDirectory)/devopsJson
       cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/devopsJson/devops.json
     displayName: 'Move devops.json to devopsJson'
+  
+  - script: |
+      jq '.SHA1Key |= "28:C2:AF:30:04:9C:17:DF:E7:BB:B2:B7:77:5A:32:90:4E:02:D7:25"' $(System.DefaultWorkingDirectory)/devopsJson/devops.json > $(System.DefaultWorkingDirectory)/devopsJson/modified_devops.json
+      mv $(System.DefaultWorkingDirectory)/devopsJson/modified_devops.json $(System.DefaultWorkingDirectory)/devopsJson/devops.json
+    displayName: 'Add SHA1 Key to devops.json'
 
   # Publish devops.json as a build artifact
   - task: PublishBuildArtifacts@1
