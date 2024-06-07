@@ -61,6 +61,3 @@ steps:
     inputs:
       pathtoPublish: '$(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd'
       artifactName: 'devopsjson'
-    inputs:
-      downloadPath: '$(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd'
-      artifactName: 'devopsjson'
