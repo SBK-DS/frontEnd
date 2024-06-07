@@ -58,7 +58,7 @@ steps:
       secureFile: 'devops.json'
 
   - script: |
-      cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/devopsJson
+      cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/devopsJson/devops.json
     displayName: 'Move devops.json to devopsJson'
 
   # Publish devops.json as a build artifact
