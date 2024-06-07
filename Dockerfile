@@ -1,6 +1,14 @@
 # Use the official CirrusLabs Flutter Docker image
 FROM ghcr.io/cirruslabs/flutter:3.22.0-0.3.pre
 
+RUN apt-get update && apt-get install -y \
+    openjdk-11-jdk \
+    wget \
+    unzip \
+    git \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Set the working directory in the container
 WORKDIR /app
 

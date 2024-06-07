@@ -15,5 +15,28 @@ steps:
     displayName: 'Build Docker Image'
   
   - script: |
-      docker run --rm -v $(pwd):/app -w /app flutter-app flutter build apk
-    displayName: 'Build APK'
+      docker run --name flutter-build-container -v $(pwd):/app -w /app flutter-app flutter build appbundle
+    displayName: 'Build App Bundle'
+
+  - script: |
+      docker run --rm flutter-app openssl version
+      docker run --rm flutter-app flutter --version
+    displayName: 'Check OpenSSL and Flutter Version'
+
+  # Step 3: Copy Bundle from Docker Container to Host Machine
+  - script: |
+      docker cp flutter-build-container:/app/build/app/outputs/bundle/release/app-release.aab $(System.DefaultWorkingDirectory)/app-release.aab
+      docker rm flutter-build-container
+    displayName: 'Copy Bundle from Docker Container'
+
+  # Step 4: Verify Bundle is in the correct path
+  - script: |
+      ls -la $(System.DefaultWorkingDirectory)/app-release.aab
+    displayName: 'Verify Bundle Path'
+
+  # Step 5: Publish Bundle as Artifact
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: '$(System.DefaultWorkingDirectory)/app-release.aab'
+      artifactName: 'drop'
+    displayName: 'Publish Bundle Artifact'
