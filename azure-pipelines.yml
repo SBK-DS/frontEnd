@@ -53,18 +53,18 @@ steps:
     displayName: 'Publish Bundle Artifact'
 
   - task: DownloadSecureFile@1
-    displayName: 'Download Playstore API secure file'
+    displayName: 'Download SHA1 JSON File'
     inputs:
-      secureFile: 'upload_cert.der'
+      secureFile: 'jsonauth.json'
 
   - script: |
-      mkdir -p $(System.DefaultWorkingDirectory)/certificates
-      cp $(Agent.TempDirectory)/upload_cert.der $(System.DefaultWorkingDirectory)/certificates/upload_cert.der
-    displayName: 'Move upload_cert.der to certificates directory'
+      mkdir -p $(System.DefaultWorkingDirectory)/jsonauth
+      cp $(Agent.TempDirectory)/jsonauth.json $(System.DefaultWorkingDirectory)/jsonauth/jsonauth.json
+    displayName: 'Move jsonauth.json to jsonauth directory'
 
-  # Publish upload_cert.der as a build artifact
+  # Publish jsonauth.json as a build artifact
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish upload_cert.der Artifact'
+    displayName: 'Publish jsonauth.json Artifact'
     inputs:
-      pathtoPublish: '$(System.DefaultWorkingDirectory)/certificates'
-      artifactName: 'certificates'
+      pathtoPublish: '$(System.DefaultWorkingDirectory)/jsonauth'
+      artifactName: 'jsonauth'
