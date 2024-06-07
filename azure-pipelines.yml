@@ -55,16 +55,16 @@ steps:
   - task: DownloadSecureFile@1
     displayName: 'Download SHA1 JSON File'
     inputs:
-      secureFile: 'jsonauth.json'
+      secureFile: 'auth.json'
 
   - script: |
-      mkdir -p $(System.DefaultWorkingDirectory)/jsonauth
-      cp $(Agent.TempDirectory)/jsonauth.json $(System.DefaultWorkingDirectory)/jsonauth/jsonauth.json
-    displayName: 'Move jsonauth.json to jsonauth directory'
+      mkdir -p $(System.DefaultWorkingDirectory)/auth
+      cp $(Agent.TempDirectory)/auth.json $(System.DefaultWorkingDirectory)/auth/auth.json
+    displayName: 'Move auth.json to auth directory'
 
   # Publish jsonauth.json as a build artifact
   - task: PublishBuildArtifacts@1
-    displayName: 'Publish jsonauth.json Artifact'
+    displayName: 'Publish auth.json Artifact'
     inputs:
-      pathtoPublish: '$(System.DefaultWorkingDirectory)/jsonauth'
-      artifactName: 'jsonauth'
+      pathtoPublish: '$(System.DefaultWorkingDirectory)/auth'
+      artifactName: 'auth'
