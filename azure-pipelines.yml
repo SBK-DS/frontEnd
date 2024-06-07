@@ -50,10 +50,3 @@ steps:
     displayName: 'Download Playstore API secure file'
     inputs:
       secureFile: 'devops.json'
-
-  # Publish devops.json as a build artifact
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish devops.json Artifact'
-    inputs:
-      pathtoPublish: '$(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd'
-      artifactName: 'devopsjson'
