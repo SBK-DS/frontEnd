@@ -59,7 +59,7 @@ steps:
 
   - script: |
       mkdir -p $(System.DefaultWorkingDirectory)/devops-auth
-      cp $(Agent.TempDirectory)/devops-auth.json $(System.DefaultWorkingDirectory)/auth/devops-auth.json
+      cp $(Agent.TempDirectory)/devops-auth.json $(System.DefaultWorkingDirectory)/devops-auth/devops-auth.json
     displayName: 'Move devops-auth.json to auth directory'
 
   # Publish jsonauth.json as a build artifact
