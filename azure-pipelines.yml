@@ -46,12 +46,22 @@ steps:
       ls -la $(System.DefaultWorkingDirectory)/app-release.aab
     displayName: 'Verify Bundle Path'
 
-  # Step 5: Publish Bundle as Artifact
-  - task: PublishBuildArtifacts@1
+  - task: DownloadSecureFile@1
+    displayName: 'Download Playstore API secure file'
     inputs:
-      pathtoPublish: '$(System.DefaultWorkingDirectory)/app-release.aab'
-      artifactName: 'drop'
-    displayName: 'Publish Bundle Artifact'
+      secureFile: 'devops.json'
+
+  # Move devops.json to _SBK-DS.frontEnd folder
+  - script: |
+      cp $(Agent.TempDirectory)/devops.json $(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd
+    displayName: 'Move devops.json to _SBK-DS.frontEnd folder'
+
+  # Publish devops.json as a build artifact
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish devops.json Artifact'
+    inputs:
+      pathtoPublish: '$(System.DefaultWorkingDirectory)/_SBK-DS.frontEnd'
+      artifactName: 'devopsjson'
 
   - task: DownloadArtifact@1
     displayName: 'Download devops.json'
