@@ -63,8 +63,8 @@ steps:
     displayName: 'Move devops-auth.json to auth directory'
 
   # Publish jsonauth.json as a build artifact
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish devops-auth.json Artifact'
-    inputs:
-      pathtoPublish: '$(System.DefaultWorkingDirectory)/devops-auth'
-      artifactName: 'devops-auth'
+  # - task: PublishBuildArtifacts@1
+  #   displayName: 'Publish devops-auth.json Artifact'
+  #   inputs:
+  #     pathtoPublish: '$(System.DefaultWorkingDirectory)/devops-auth'
+  #     artifactName: 'devops-auth'
